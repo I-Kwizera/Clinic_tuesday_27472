@@ -19,4 +19,8 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
     List<Patient> findPatientsOfDoctor(UUID doctorId);
 
+@Query("SELECT p FROM Patient p JOIN p.appointments a GROUP BY p HAVING COUNT(a) >= ?1 ORDER BY COUNT(a) DESC")
+    
+    List<Patient> findFrequentPatients(long min);
+
 }

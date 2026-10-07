@@ -20,7 +20,7 @@ import kigali.clinic.rw.domain.Office;
 import kigali.clinic.rw.service.OfficeService;
 
 @RestController 
-@RequestMapping (value="/api/office")
+@RequestMapping (value = {"/api/office", "/api/offices"})
 public class OfficeController {
 
     @Autowired 
@@ -40,6 +40,16 @@ public class OfficeController {
     @GetMapping(value = {"", "/all"})
     public ResponseEntity<List<Office>> getAllOffices() {
         return new ResponseEntity<>(offServe.getAllOffices(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/busiest")
+    public ResponseEntity<?> getBusiestOffice() {
+        Optional<Object[]> office = offServe.getBusiestOffice();
+        if (office.isPresent()) {
+            return new ResponseEntity<>(office.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("No appointments yet", HttpStatus.OK);
+        }
     }
 
     @GetMapping(value = "/{id}")

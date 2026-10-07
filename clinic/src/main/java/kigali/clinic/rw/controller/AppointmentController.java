@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import kigali.clinic.rw.domain.Appointment;
 import kigali.clinic.rw.domain.AppointmentStatus;
@@ -84,6 +85,17 @@ public class AppointmentController {
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         return new ResponseEntity<>(appointmentService.getAppointmentsBetween(Date.valueOf(startDate), Date.valueOf(endDate)), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/stats/by-status")
+    public ResponseEntity<List<Object[]>> getAppointmentsPerStatus() {
+        return new ResponseEntity<>(appointmentService.getAppointmentsPerStatus(), HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/cancel-day")
+    public ResponseEntity<String> cancelDay(@RequestParam UUID doctorId, @RequestParam String date) {
+        LocalDate day = LocalDate.parse(date);
+        return new ResponseEntity<>(appointmentService.cancelDay(doctorId, Date.valueOf(day)), HttpStatus.OK);
     }
 
     @PutMapping(value = {"/{id}", "/update/{id}"})

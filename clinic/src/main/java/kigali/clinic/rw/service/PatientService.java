@@ -53,6 +53,11 @@ public class PatientService {
         return Optional.of(patientRepo.findPatientsOfDoctor(doctorId));
     }
 
+    public List<Patient> getFrequentPatients(long min) {
+        return patientRepo.findFrequentPatients(min);
+    
+    }
+
     public String updatePatient(UUID id, Patient updatedPatient) {
         if (updatedPatient == null) {
             return "Patient payload cannot be null";

@@ -7,6 +7,7 @@ import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import kigali.clinic.rw.domain.Appointment;
 import kigali.clinic.rw.domain.AppointmentStatus;
@@ -54,7 +55,7 @@ public class AppointmentService {
         if (appointmentRepo.existsByDoctorIdAndAppointmentDateAndStatusNot(appointment.getDoctor().getId(), appointment.getAppointmentDate(), AppointmentStatus.CANCELLED)) {
             return "Doctor is already booked on that date";
         }
-        
+
         if (appointment.getStatus() == null) {
             appointment.setStatus(AppointmentStatus.SCHEDULED);
         }
@@ -87,12 +88,22 @@ public class AppointmentService {
     }
 
     public List<Appointment> getAppointmentsByStatusOrdered(AppointmentStatus status) {
-    return appointmentRepo.findByStatusOrderByAppointmentDateAsc(status);
+        return appointmentRepo.findByStatusOrderByAppointmentDateAsc(status);
     }
 
     public List<Appointment> getAppointmentsBetween(Date start, Date end) {
-    return appointmentRepo.findByAppointmentDateBetweenOrderByAppointmentDateAsc(start, end);
-   }
+        return appointmentRepo.findByAppointmentDateBetweenOrderByAppointmentDateAsc(start, end);
+    }
+
+    public List<Object[]> getAppointmentsPerStatus() {
+        return appointmentRepo.countAppointmentsByStatus();
+    }
+
+    @Transactional
+    public String cancelDay(UUID doctorId, Date date) {
+        int count = appointmentRepo.cancelDay(doctorId, date);
+        return count + " appointments cancelled";
+    }
 
     public String updateAppointment(UUID id, Appointment updatedAppointment) {
         if (updatedAppointment == null) {

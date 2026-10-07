@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import kigali.clinic.rw.domain.Office;
 
@@ -16,4 +17,7 @@ public interface OfficeRepository extends JpaRepository<Office, UUID> {
     List<Office> findByNameContainingIgnoreCase(String name);
     Optional<Office> findByOfficeNumber(int officeNumber);
     boolean existsByOfficeNumber(int officeNumber);
+
+@Query("SELECT o.name, o.officeNumber, COUNT(a) FROM Appointment a JOIN a.doctor d JOIN d.office o GROUP BY o.name, o.officeNumber ORDER BY COUNT(a) DESC")
+    List<Object[]> findBusiestOffice();   
 }

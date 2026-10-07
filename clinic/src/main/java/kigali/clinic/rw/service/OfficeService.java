@@ -40,6 +40,14 @@ public class OfficeService {
         return offRepo.findById(id);
     }
 
+    public Optional<Object[]> getBusiestOffice() {
+        List<Object[]> rows = offRepo.findBusiestOffice();
+        if (rows.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(rows.get(0));
+    }
+
     public String updateOffice(UUID id, Office updatedOffice) {
         if (updatedOffice == null) {
             return "Office payload cannot be null";
