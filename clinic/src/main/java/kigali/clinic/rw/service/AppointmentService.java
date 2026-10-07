@@ -8,6 +8,9 @@ import java.sql.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import kigali.clinic.rw.domain.Appointment;
 import kigali.clinic.rw.domain.AppointmentStatus;
@@ -103,6 +106,15 @@ public class AppointmentService {
     public String cancelDay(UUID doctorId, Date date) {
         int count = appointmentRepo.cancelDay(doctorId, date);
         return count + " appointments cancelled";
+    }
+
+    public Page<Appointment> getAppointmentsPage(Pageable pageable) {
+        return appointmentRepo.findAll(pageable);
+    }
+
+    @Transactional
+    public String deleteCancelledBefore(Date date) {
+        return appointmentRepo.deleteCancelledBefore(date) + " appointments deleted";
     }
 
     public String updateAppointment(UUID id, Appointment updatedAppointment) {

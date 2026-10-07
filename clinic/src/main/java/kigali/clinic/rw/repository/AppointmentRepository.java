@@ -30,4 +30,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 @Query("UPDATE Appointment a SET a.status = kigali.clinic.rw.domain.AppointmentStatus.CANCELLED WHERE a.doctor.id = ?1 AND a.appointmentDate = ?2 AND a.status <> kigali.clinic.rw.domain.AppointmentStatus.COMPLETED")
     int cancelDay(UUID doctorId, Date date);    
 
+@Modifying
+@Query("DELETE FROM Appointment a WHERE a.status = kigali.clinic.rw.domain.AppointmentStatus.CANCELLED AND a.appointmentDate < ?1")
+int deleteCancelledBefore(Date date);
+    
 }

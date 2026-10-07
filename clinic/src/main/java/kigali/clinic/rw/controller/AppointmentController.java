@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import kigali.clinic.rw.domain.Appointment;
 import kigali.clinic.rw.domain.AppointmentStatus;
@@ -96,6 +100,18 @@ public class AppointmentController {
     public ResponseEntity<String> cancelDay(@RequestParam UUID doctorId, @RequestParam String date) {
         LocalDate day = LocalDate.parse(date);
         return new ResponseEntity<>(appointmentService.cancelDay(doctorId, Date.valueOf(day)), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/page")
+    public ResponseEntity<Page<Appointment>> getAppointmentsPage(@RequestParam int page, @RequestParam int size, @RequestParam String sort) {
+        String[] sortParts = sort.split(",");
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortParts[1]), sortParts[0]));
+        return new ResponseEntity<>(appointmentService.getAppointmentsPage(pageable), HttpStatus.OK);
+}
+
+    @DeleteMapping(value = "/cancelled-before")
+    public ResponseEntity<String> deleteCancelledBefore(@RequestParam String date) {
+        return new ResponseEntity<>(appointmentService.deleteCancelledBefore(Date.valueOf(LocalDate.parse(date))), HttpStatus.OK);
     }
 
     @PutMapping(value = {"/{id}", "/update/{id}"})
