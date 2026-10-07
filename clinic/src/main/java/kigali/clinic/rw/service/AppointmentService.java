@@ -27,10 +27,6 @@ public class AppointmentService {
     @Autowired
     private DoctorRepository doctorRepo;
 
-    public List<Appointment> getAppointmentsByStatus(AppointmentStatus status) {
-        return appointmentRepo.findByStatusOrderByAppointmentDateAsc(status);
-    }
-
     public String bookAppointment(Appointment appointment) {
         if (appointment == null) {
             return "Appointment cannot be null";
@@ -80,6 +76,14 @@ public class AppointmentService {
     public List<Appointment> getAppointmentsByDoctor(UUID doctorId) {
         return appointmentRepo.findByDoctorId(doctorId);
     }
+
+    public List<Appointment> getAppointmentsByStatus(AppointmentStatus status) {
+        return appointmentRepo.findByStatus(status);
+    }
+
+    public List<Appointment> getAppointmentsByStatusOrdered(AppointmentStatus status) {
+    return appointmentRepo.findByStatusOrderByAppointmentDateAsc(status);
+}
 
     public String updateAppointment(UUID id, Appointment updatedAppointment) {
         if (updatedAppointment == null) {
