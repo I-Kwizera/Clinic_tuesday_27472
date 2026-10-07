@@ -21,15 +21,12 @@ import kigali.clinic.rw.domain.Patient;
 import kigali.clinic.rw.service.PatientService;
 
 @RestController
-@RequestMapping(value = "/api/patient")
+@RequestMapping(value = {"/api/patient", "/api/patients"})
 public class PatientController {
 
     @Autowired
     private PatientService patientService;
-    @GetMapping("/by-last-name")
-public List<Patient> getPatientsByLastName(@RequestParam String lastName) {
-    return patientService.getPatientsByLastName(lastName);
-}
+
     @PostMapping(value = {"", "/save"})
     public ResponseEntity<?> savePatient(@RequestBody Patient patient) {
         String result = patientService.savePatient(patient);
@@ -44,6 +41,11 @@ public List<Patient> getPatientsByLastName(@RequestParam String lastName) {
     public ResponseEntity<List<Patient>> getAllPatients() {
         return new ResponseEntity<>(patientService.getAllPatients(), HttpStatus.OK);
     }
+    
+    @GetMapping(value = "/by-last-name")
+    public ResponseEntity<List<Patient>> getPatientsByLastName(@RequestParam String lastName) {
+        return new ResponseEntity<>(patientService.getPatientsByLastName(lastName), HttpStatus.OK);
+}
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> getPatientById(@PathVariable UUID id) {

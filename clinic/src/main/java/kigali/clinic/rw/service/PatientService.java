@@ -15,9 +15,7 @@ public class PatientService {
 
     @Autowired
     private PatientRepository patientRepo;
-     public List<Patient> getPatientsByLastName(String lastName) {
-        return patientRepo.findByLastNameIgnoreCaseOrderByFirstNameAsc(lastName);
-    }
+
     public String savePatient(Patient patient) {
         if (patient == null) {
             return "Patient cannot be null";
@@ -40,7 +38,9 @@ public class PatientService {
     public Optional<Patient> getPatientById(UUID id) {
         return patientRepo.findById(id);
     }
-
+    public List<Patient> getPatientsByLastName(String lastName) {
+    return patientRepo.findByLastNameIgnoreCaseOrderByFirstNameAsc(lastName);
+}
     public String updatePatient(UUID id, Patient updatedPatient) {
         if (updatedPatient == null) {
             return "Patient payload cannot be null";
