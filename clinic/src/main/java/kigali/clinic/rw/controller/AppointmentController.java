@@ -3,6 +3,8 @@ package kigali.clinic.rw.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.sql.Date;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,7 +75,15 @@ public class AppointmentController {
     @GetMapping(value = "/by-status")
     public ResponseEntity<List<Appointment>> getAppointmentsByStatusOrdered(@RequestParam AppointmentStatus status) {
         return new ResponseEntity<>(appointmentService.getAppointmentsByStatusOrdered(status), HttpStatus.OK);
-   }
+    }
+
+    @GetMapping(value = "/between")
+    public ResponseEntity<List<Appointment>> getAppointmentsBetween(@RequestParam String start, @RequestParam String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        return new ResponseEntity<>(appointmentService.getAppointmentsBetween(Date.valueOf(startDate), Date.valueOf(endDate)), HttpStatus.OK);
+    }
+
     @PutMapping(value = {"/{id}", "/update/{id}"})
     public ResponseEntity<?> updateAppointment(@PathVariable UUID id, @RequestBody Appointment appointment) {
         String result = appointmentService.updateAppointment(id, appointment);

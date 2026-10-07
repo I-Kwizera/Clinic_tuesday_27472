@@ -3,6 +3,7 @@ package kigali.clinic.rw.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.sql.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,11 @@ public class AppointmentService {
 
     public List<Appointment> getAppointmentsByStatusOrdered(AppointmentStatus status) {
     return appointmentRepo.findByStatusOrderByAppointmentDateAsc(status);
-}
+    }
+
+    public List<Appointment> getAppointmentsBetween(Date start, Date end) {
+    return appointmentRepo.findByAppointmentDateBetweenOrderByAppointmentDateAsc(start, end);
+   }
 
     public String updateAppointment(UUID id, Appointment updatedAppointment) {
         if (updatedAppointment == null) {
