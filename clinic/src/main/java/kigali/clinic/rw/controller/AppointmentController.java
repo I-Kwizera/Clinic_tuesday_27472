@@ -37,7 +37,9 @@ public class AppointmentController {
             return new ResponseEntity<>(result, HttpStatus.CREATED);
         } else if (result.contains("not found")) {
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        } else {
+        }else if (result.equals("Doctor is already booked on that date")) {
+            return new ResponseEntity<>(result, HttpStatus.CONFLICT);
+        }else {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
     }

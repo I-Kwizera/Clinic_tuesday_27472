@@ -51,6 +51,10 @@ public class AppointmentService {
             return "Doctor not found with id: " + appointment.getDoctor().getId();
         }
 
+        if (appointmentRepo.existsByDoctorIdAndAppointmentDateAndStatusNot(appointment.getDoctor().getId(), appointment.getAppointmentDate(), AppointmentStatus.CANCELLED)) {
+            return "Doctor is already booked on that date";
+        }
+        
         if (appointment.getStatus() == null) {
             appointment.setStatus(AppointmentStatus.SCHEDULED);
         }
