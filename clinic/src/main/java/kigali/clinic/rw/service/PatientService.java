@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 
 import kigali.clinic.rw.domain.Patient;
 import kigali.clinic.rw.repository.PatientRepository;
+import kigali.clinic.rw.repository.DoctorRepository;
 
 @Service
 public class PatientService {
 
     @Autowired
     private PatientRepository patientRepo;
+
+    @Autowired
+    private DoctorRepository doctorRepo;
 
     public String savePatient(Patient patient) {
         if (patient == null) {
@@ -40,7 +44,15 @@ public class PatientService {
     }
     public List<Patient> getPatientsByLastName(String lastName) {
     return patientRepo.findByLastNameIgnoreCaseOrderByFirstNameAsc(lastName);
-}
+    }
+
+    public Optional<List<Patient>> getPatientsOfDoctor(UUID doctorId) {
+    if (!doctorRepo.existsById(doctorId)) {
+        return Optional.empty();
+    }
+        return Optional.of(patientRepo.findPatientsOfDoctor(doctorId));
+    }
+
     public String updatePatient(UUID id, Patient updatedPatient) {
         if (updatedPatient == null) {
             return "Patient payload cannot be null";

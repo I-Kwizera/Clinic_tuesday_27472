@@ -41,6 +41,10 @@ public class SpecializationService {
         return specializationRepo.findById(id);
     }
 
+    public List<Specialization> getUnusedSpecializations() {
+        return specializationRepo.findUnusedSpecializations();
+    }
+
     public String updateSpecialization(UUID id, Specialization updatedSpec) {
         if (updatedSpec == null) {
             return "Specialization payload cannot be null";

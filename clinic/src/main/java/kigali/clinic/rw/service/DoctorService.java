@@ -76,6 +76,14 @@ public class DoctorService {
         return doctorRepo.findById(id);
     }
 
+    public List<Doctor> getDoctorsBySpecialization(String name) {
+        return doctorRepo.findDoctorsBySpecializationName(name);
+    }
+
+    public List<Doctor> getDoctorsWithoutOffice() {
+        return doctorRepo.findDoctorsWithoutOffice();
+    }
+
     public String updateDoctor(UUID id, Doctor updatedDoctor) {
         if (updatedDoctor == null) {
             return "Doctor payload cannot be null";

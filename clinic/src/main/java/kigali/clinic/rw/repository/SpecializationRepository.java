@@ -2,9 +2,11 @@ package kigali.clinic.rw.repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import kigali.clinic.rw.domain.Specialization;
 
@@ -13,4 +15,9 @@ public interface SpecializationRepository extends JpaRepository<Specialization, 
 
     Optional<Specialization> findByNameIgnoreCase(String name);
     boolean existsByNameIgnoreCase(String name);
+
+@Query("SELECT s FROM Specialization s WHERE s.doctors IS EMPTY")
+
+List<Specialization> findUnusedSpecializations();
 }
+
