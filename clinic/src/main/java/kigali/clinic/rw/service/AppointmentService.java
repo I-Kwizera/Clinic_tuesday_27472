@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -234,4 +235,8 @@ public class AppointmentService {
         appointmentRepo.deleteById(id);
         return "Appointment is deleted successfully";
     }
+
+    public List<Appointment> getDoctorAgenda(UUID doctorId, LocalDate date) {
+    return appointmentRepo.findByDoctorIdAndDateAndStatusNot(doctorId, date, AppointmentStatus.CANCELLED);
+}
 }

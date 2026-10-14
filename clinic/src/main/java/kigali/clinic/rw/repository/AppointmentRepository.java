@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import kigali.clinic.rw.domain.Appointment;
 import kigali.clinic.rw.domain.AppointmentStatus;
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
@@ -21,6 +22,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> findByStatusOrderByAppointmentDateAsc(AppointmentStatus status);
     List<Appointment> findByAppointmentDateBetweenOrderByAppointmentDateAsc(Date start, Date end);
     boolean existsByDoctorIdAndAppointmentDateAndStatusNot(UUID doctorId, Date appointmentDate, AppointmentStatus status);
+    List<Appointment> findByDoctorIdAndDateAndStatusNot(UUID doctorId, LocalDate date, AppointmentStatus status);
 
 @Query("SELECT a.status, COUNT(a) FROM Appointment a GROUP BY a.status")
     

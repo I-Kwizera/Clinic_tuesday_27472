@@ -35,6 +35,11 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
+    @GetMapping("/doctors/{doctorId}/agenda")
+    public List<Appointment> getDoctorAgenda(@PathVariable UUID doctorId, @RequestParam LocalDate date) {
+        return appointmentService.getDoctorAgenda(doctorId, date);
+    }
+
     @PostMapping(value = {"", "/book", "/save"})
     public ResponseEntity<?> bookAppointment(@RequestBody Appointment appointment) {
         String result = appointmentService.bookAppointment(appointment);
