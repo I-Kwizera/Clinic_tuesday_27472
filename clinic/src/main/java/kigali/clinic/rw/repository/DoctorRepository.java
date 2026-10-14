@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import kigali.clinic.rw.domain.Doctor;
 
@@ -24,6 +25,9 @@ List<Doctor> findDoctorsBySpecializationName(String name);
 
 @Query("SELECT d FROM Doctor d WHERE d.office IS NULL ORDER BY d.lastName")
 List<Doctor> findDoctorsWithoutOffice();
+
+@Query("SELECT d FROM Doctor d WHERE LOWER(d.firstName) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(d.lastName) LIKE LOWER(CONCAT('%', :name, '%')) ORDER BY d.lastName ASC")
+List<Doctor> searchDoctors(@Param("name") String name);
 
 }
 

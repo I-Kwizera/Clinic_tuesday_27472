@@ -180,7 +180,7 @@ public class DoctorService {
         if (!spec.getDoctors().contains(doctor)) {
             spec.getDoctors().add(doctor);
             specializationRepo.save(spec);
-      }
+        }
         return "Specialization added successfully to doctor";
     }
 
@@ -258,5 +258,9 @@ public class DoctorService {
         doctor.setOffice(newOffice);
         doctorRepo.save(doctor);
         return "Office changed successfully";
+    }
+
+    public List<Doctor> searchDoctors(String name) {
+        return doctorRepo.searchDoctors(name);
     }
 }
