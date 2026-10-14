@@ -8,9 +8,10 @@ import java.sql.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.http.HttpStatus;
 
 import kigali.clinic.rw.domain.Appointment;
 import kigali.clinic.rw.domain.AppointmentStatus;
@@ -35,6 +36,10 @@ public class AppointmentService {
     public String bookAppointment(Appointment appointment) {
         if (appointment == null) {
             return "Appointment cannot be null";
+        }
+
+        if (appointment.getAppointmentDate() != null && appointment.getAppointmentDate().toLocalDate().isBefore(java.time.LocalDate.now())) {
+            return "Appointment date cannot be in the past";
         }
 
         if (appointment.getPatient() == null || appointment.getPatient().getId() == null) {
@@ -65,6 +70,7 @@ public class AppointmentService {
 
         appointment.setPatient(patientOpt.get());
         appointment.setDoctor(doctorOpt.get());
+        appointment.setStatus(AppointmentStatus.SCHEDULED);
 
         appointmentRepo.save(appointment);
         return "Appointment is booked successfully";
@@ -159,15 +165,58 @@ public class AppointmentService {
         return "Appointment is updated successfully";
     }
 
-    public String updateStatus(UUID id, AppointmentStatus status) {
+    @Transactional
+    public String updateAppointmentStatusFlow(UUID id, AppointmentStatus newStatus) {
         Optional<Appointment> optionalAppointment = appointmentRepo.findById(id);
         if (optionalAppointment.isEmpty()) {
-            return "Appointment not found with id: " + id;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The appointment with that id does not exist");
         }
+
         Appointment app = optionalAppointment.get();
-        app.setStatus(status);
+        AppointmentStatus current = app.getStatus();
+
+        if (current == AppointmentStatus.SCHEDULED && newStatus != AppointmentStatus.CONFIRMED && newStatus != AppointmentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot change status from " + current + " to " + newStatus);
+        }
+        if (current == AppointmentStatus.CONFIRMED && newStatus != AppointmentStatus.COMPLETED && newStatus != AppointmentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot change status from " + current + " to " + newStatus);
+        }
+        if (current == AppointmentStatus.COMPLETED && newStatus != AppointmentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot change status from " + current + " to " + newStatus);
+        }
+
+        app.setStatus(newStatus);
         appointmentRepo.save(app);
-        return "Appointment status updated to " + status;
+        return "Appointment status updated successfully";
+    }
+
+    @Transactional
+    public String rescheduleAppointment(UUID id, Date newDate) {
+        Appointment appointment = appointmentRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The appointment with that id does not exist"));
+
+        if (newDate != null && newDate.toLocalDate().isBefore(java.time.LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Appointment date cannot be in the past");
+        }
+
+        AppointmentStatus status = appointment.getStatus();
+        if (status == AppointmentStatus.COMPLETED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A COMPLETED appointment cannot be rescheduled");
+        }
+        if (status == AppointmentStatus.CANCELLED) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A CANCELLED appointment cannot be rescheduled");
+        }
+
+        UUID doctorId = appointment.getDoctor().getId();
+        if (appointmentRepo.existsByDoctorIdAndAppointmentDateAndStatusNot(doctorId, newDate, AppointmentStatus.CANCELLED)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor is already booked on that date");
+        }
+
+        appointment.setAppointmentDate(newDate);
+        appointment.setStatus(AppointmentStatus.SCHEDULED);
+        appointmentRepo.save(appointment);
+
+        return "Appointment rescheduled successfully";
     }
 
     public String deleteAppointment(UUID id) {

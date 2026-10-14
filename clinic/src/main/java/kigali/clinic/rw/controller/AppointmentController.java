@@ -126,16 +126,6 @@ public class AppointmentController {
         }
     }
 
-    @PutMapping(value = "/{id}/status/{status}")
-    public ResponseEntity<?> updateStatus(@PathVariable UUID id, @PathVariable AppointmentStatus status) {
-        String result = appointmentService.updateStatus(id, status);
-        if (result.startsWith("Appointment status updated")) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
-        }
-    }
-
     @DeleteMapping(value = {"/{id}", "/delete/{id}"})
     public ResponseEntity<?> deleteAppointment(@PathVariable UUID id) {
         String result = appointmentService.deleteAppointment(id);
@@ -144,5 +134,20 @@ public class AppointmentController {
         } else {
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> updateAppointmentStatus(
+            @PathVariable UUID id, 
+            @RequestParam AppointmentStatus status) {
+        String message = appointmentService.updateAppointmentStatusFlow(id, status);
+        return ResponseEntity.ok(message);
+    }
+@PatchMapping("/{id}/reschedule")
+    public ResponseEntity<String> rescheduleAppointment(
+            @PathVariable UUID id, 
+            @RequestParam Date newDate) {
+        String message = appointmentService.rescheduleAppointment(id, newDate);
+        return ResponseEntity.ok(message);
     }
 }

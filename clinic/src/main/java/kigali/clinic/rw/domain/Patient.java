@@ -34,6 +34,9 @@ public class Patient {
     @Column (name="date_of_birth")
     private Date dateOfBirth;
 
+    @Column (name="ss_number")
+    private String ssNumber;
+
     @OneToMany (mappedBy = "patient")
     @JsonIgnoreProperties("patient")
     private List<Appointment> appointments = new ArrayList<>();
@@ -41,10 +44,11 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(String firstName, String lastName, Date dateOfBirth) {
+    public Patient(String firstName, String lastName, Date dateOfBirth, String ssNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
+        this.ssNumber = ssNumber;
     }
 
     public UUID getId() {
@@ -79,10 +83,18 @@ public class Patient {
         this.dateOfBirth = dateOfBirth;
     }
 
+    public String getSsNumber() {
+        return ssNumber;
+    }
+
+    public void setSsNumber(String ssNumber) {
+        this.ssNumber = ssNumber;
+    }
     public List<Appointment> getAppointments() {
         return appointments;
     }
 
+    
     public void setAppointments(List<Appointment> appointments) {
         this.appointments = appointments;
     }
