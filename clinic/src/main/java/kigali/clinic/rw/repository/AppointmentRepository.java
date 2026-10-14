@@ -22,8 +22,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> findByStatusOrderByAppointmentDateAsc(AppointmentStatus status);
     List<Appointment> findByAppointmentDateBetweenOrderByAppointmentDateAsc(Date start, Date end);
     boolean existsByDoctorIdAndAppointmentDateAndStatusNot(UUID doctorId, Date appointmentDate, AppointmentStatus status);
-    List<Appointment> findByDoctorIdAndDateAndStatusNot(UUID doctorId, LocalDate date, AppointmentStatus status);
-    List<Appointment> findByPatientSsNumberAndDateGreaterThanEqualAndStatusInOrderByDateAsc(
+    List<Appointment> findByDoctorIdAndAppointmentDateAndStatusNot(UUID doctorId, Date AppointmentDate, AppointmentStatus status);
+    List<Appointment> findByPatientSsNumberAndAppointmentDateGreaterThanEqualAndStatusInOrderByAppointmentDateAsc(
     String ssNumber, LocalDate date, List<AppointmentStatus> statuses);
 
 @Query("SELECT a.status, COUNT(a) FROM Appointment a GROUP BY a.status")
@@ -38,4 +38,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 @Query("DELETE FROM Appointment a WHERE a.status = kigali.clinic.rw.domain.AppointmentStatus.CANCELLED AND a.appointmentDate < ?1")
 int deleteCancelledBefore(Date date);
     
+long countByAppointmentDate(Date appointmentDate);
+long countByStatus(AppointmentStatus status);
+
 }

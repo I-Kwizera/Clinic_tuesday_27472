@@ -134,4 +134,9 @@ public class DoctorController {
         String message = doctorService.moveDoctorToOffice(doctorId, officeNumber);
         return ResponseEntity.ok(message);
     }
+
+    @GetMapping("/search")
+public List<Doctor> searchDoctors(@RequestParam String name) {
+    return doctorService.searchDoctors(name);
+    }
 }
