@@ -78,4 +78,8 @@ public class OfficeService {
         offRepo.deleteById(id);
         return "Office is deleted successfully";
     }
+
+    public List<Office> getFreeOffices() {
+        return offRepo.findFreeOffices();
+    }
 }

@@ -6,7 +6,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import kigali.clinic.rw.domain.Doctor;
 import kigali.clinic.rw.domain.Office;
@@ -179,5 +182,81 @@ public class DoctorService {
             specializationRepo.save(spec);
       }
         return "Specialization added successfully to doctor";
+    }
+
+    @Transactional
+    public String addSpecializationToDoctor(UUID doctorId, UUID specializationId) {
+        Optional<Doctor> docOpt = doctorRepo.findById(doctorId);
+        if (docOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The doctor with that id does not exist");
+        }
+
+        Optional<Specialization> specOpt = specializationRepo.findById(specializationId);
+        if (specOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "That specialization does not exist");
+        }
+
+        Doctor doctor = docOpt.get();
+        Specialization spec = specOpt.get();
+
+        if (doctor.getSpecializations().contains(spec)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The doctor already has that specialization");
+        }
+
+        doctor.getSpecializations().add(spec);
+        doctorRepo.save(doctor);
+        return "Specialization added to the doctor";
+    }
+
+    @Transactional
+    public String removeSpecializationFromDoctor(UUID doctorId, UUID specializationId) {
+        Optional<Doctor> docOpt = doctorRepo.findById(doctorId);
+        if (docOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The doctor with that id does not exist");
+        }
+
+        Optional<Specialization> specOpt = specializationRepo.findById(specializationId);
+        if (specOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "That specialization does not exist");
+        }
+
+        Doctor doctor = docOpt.get();
+        Specialization spec = specOpt.get();
+
+        if (!doctor.getSpecializations().contains(spec)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The doctor does not have that specialization");
+        }
+
+        doctor.getSpecializations().remove(spec);
+        doctorRepo.save(doctor);
+        return "Specialization removed from the doctor";
+    }
+
+    @Transactional
+    public String moveDoctorToOffice(UUID doctorId, int officeNumber) {
+        Optional<Doctor> docOpt = doctorRepo.findById(doctorId);
+        if (docOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The doctor with that id does not exist");
+        }
+
+        Optional<Office> officeOpt = officeRepo.findByOfficeNumber(officeNumber);
+        if (officeOpt.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The office with that office number does not exist");
+        }
+
+        boolean isTaken = doctorRepo.existsByOfficeOfficeNumber(officeNumber);
+        if (isTaken) {
+            Doctor doctor = docOpt.get();
+            Office currentOffice = doctor.getOffice();
+            if (currentOffice == null || currentOffice.getOfficeNumber() != officeNumber) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "That office is taken by other doctor");
+            }
+        }
+
+        Doctor doctor = docOpt.get();
+        Office newOffice = officeOpt.get();
+        doctor.setOffice(newOffice);
+        doctorRepo.save(doctor);
+        return "Office changed successfully";
     }
 }

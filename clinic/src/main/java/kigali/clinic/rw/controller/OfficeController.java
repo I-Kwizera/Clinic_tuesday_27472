@@ -83,4 +83,10 @@ public class OfficeController {
             return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping("/free")
+    public ResponseEntity<List<Office>> getFreeOffices() {
+        List<Office> freeOffices = offServe.getFreeOffices();
+        return ResponseEntity.ok(freeOffices);
+    }
 }

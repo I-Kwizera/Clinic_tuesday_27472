@@ -17,6 +17,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, UUID> {
     Optional<Doctor> findByOfficeId(UUID officeId);
     boolean existsByOfficeId(UUID officeId);
     boolean existsByFirstNameAndLastNameAndDateOfBirth(String firstName, String lastName, java.util.Date dateOfBirth);
+    boolean existsByOfficeOfficeNumber(int officeNumber);
 
 @Query("SELECT d FROM Doctor d JOIN d.specializations s WHERE LOWER(s.name) = LOWER(?1)")
 List<Doctor> findDoctorsBySpecializationName(String name);

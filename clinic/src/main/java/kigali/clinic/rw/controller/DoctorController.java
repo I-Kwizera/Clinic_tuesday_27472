@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -108,5 +109,29 @@ public class DoctorController {
         } else {
             return new ResponseEntity<>(result, HttpStatus.CONFLICT);
         }
+    }
+
+    @PutMapping("/{doctorId}/specializations/{specializationId}")
+    public ResponseEntity<String> addSpecializationToDoctor(
+            @PathVariable UUID doctorId, 
+            @PathVariable UUID specializationId) {
+        String message = doctorService.addSpecializationToDoctor(doctorId, specializationId);
+        return ResponseEntity.ok(message);
+    }
+
+    @DeleteMapping("/{doctorId}/specializations/{specializationId}")
+    public ResponseEntity<String> removeSpecializationFromDoctor(
+            @PathVariable UUID doctorId, 
+            @PathVariable UUID specializationId) {
+        String message = doctorService.removeSpecializationFromDoctor(doctorId, specializationId);
+        return ResponseEntity.ok(message);
+    }
+
+    @PatchMapping("/{doctorId}/office")
+    public ResponseEntity<String> moveDoctorToOffice(
+            @PathVariable UUID doctorId, 
+            @RequestParam int officeNumber) {
+        String message = doctorService.moveDoctorToOffice(doctorId, officeNumber);
+        return ResponseEntity.ok(message);
     }
 }
