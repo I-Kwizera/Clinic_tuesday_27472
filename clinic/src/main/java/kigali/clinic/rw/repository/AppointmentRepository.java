@@ -23,6 +23,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> findByAppointmentDateBetweenOrderByAppointmentDateAsc(Date start, Date end);
     boolean existsByDoctorIdAndAppointmentDateAndStatusNot(UUID doctorId, Date appointmentDate, AppointmentStatus status);
     List<Appointment> findByDoctorIdAndDateAndStatusNot(UUID doctorId, LocalDate date, AppointmentStatus status);
+    List<Appointment> findByPatientSsNumberAndDateGreaterThanEqualAndStatusInOrderByDateAsc(
+    String ssNumber, LocalDate date, List<AppointmentStatus> statuses);
 
 @Query("SELECT a.status, COUNT(a) FROM Appointment a GROUP BY a.status")
     

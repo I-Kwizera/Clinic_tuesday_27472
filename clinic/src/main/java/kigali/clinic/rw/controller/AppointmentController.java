@@ -155,4 +155,9 @@ public class AppointmentController {
         String message = appointmentService.rescheduleAppointment(id, newDate);
         return ResponseEntity.ok(message);
     }
+
+    @GetMapping("/patients/{ssNumber}/upcoming")
+        public List<Appointment> getUpcomingAppointments(@PathVariable String ssNumber) {
+        return appointmentService.getUpcomingAppointments(ssNumber);
+    }
 }

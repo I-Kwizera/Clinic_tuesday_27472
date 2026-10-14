@@ -237,6 +237,11 @@ public class AppointmentService {
     }
 
     public List<Appointment> getDoctorAgenda(UUID doctorId, LocalDate date) {
-    return appointmentRepo.findByDoctorIdAndDateAndStatusNot(doctorId, date, AppointmentStatus.CANCELLED);
-}
+        return appointmentRepo.findByDoctorIdAndDateAndStatusNot(doctorId, date, AppointmentStatus.CANCELLED);
+    }
+
+    public List<Appointment> getUpcomingAppointments(String ssNumber) {
+    return appointmentRepo.findByPatientSsNumberAndDateGreaterThanEqualAndStatusInOrderByDateAsc(
+        ssNumber, LocalDate.now(), List.of(AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED));
+    }
 }
