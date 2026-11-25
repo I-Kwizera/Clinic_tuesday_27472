@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import kigali.clinic.rw.service.OfficeService;
 
 @RestController 
 @RequestMapping (value = {"/api/office", "/api/offices"})
+@CrossOrigin ("*")
 public class OfficeController {
 
     @Autowired 
@@ -74,15 +76,19 @@ public class OfficeController {
         }
     }
 
-    @DeleteMapping(value = {"/{id}", "/delete/{id}"})
-    public ResponseEntity<?> deleteOffice(@PathVariable UUID id) {
-        String result = offServe.deleteOffice(id);
-        if (result.equals("Office is deleted successfully")) {
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
+    @DeleteMapping(value = {"/{officeNumber}", "/delete/{officeNumber}"})
+    public ResponseEntity<?> deleteOffice(@PathVariable int officeNumber) {
+        List<Office> offices = offServe.getAllOffices();
+
+        for (Office office : offices) {
+            if (office.getOfficeNumber() == officeNumber) {
+                String result = offServe.deleteOffice(office.getId());
+                return new ResponseEntity<>(result, HttpStatus.OK);
         }
     }
+
+    return new ResponseEntity<>("Office not found with number: " + officeNumber, HttpStatus.NOT_FOUND);
+}
 
     @GetMapping("/free")
     public ResponseEntity<List<Office>> getFreeOffices() {
